@@ -6,7 +6,7 @@ class CheckIns(Base):
     __tablename__ = "check_ins"
 
     id = Column(Integer, primary_key=True)
-    attendee_id = Column(String, ForeignKey("attendee.id"))
+    attendee_id = Column(String, ForeignKey("attendees.id"))
     created_at = Column(DateTime, default=func.now())
 
     def __repr__(self):

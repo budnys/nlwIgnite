@@ -1,10 +1,12 @@
 from typing import Dict, List
+from src.errors.error_types.http_not_found import HttpNotFoundError
 from src.models.settings.connection import db_connection_handler
 from src.models.entities.attendees import Attendees
 from src.models.entities.events import Events
 from src.models.entities.check_ins import CheckIns
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
+from src.errors.error_types.http_conflict import HttpConflictError
 
 class AttendeesRepository:
     def insert_attendee(self, attendeesInfo: Dict) -> Dict:
@@ -23,7 +25,7 @@ class AttendeesRepository:
                 
                 return attendeesInfo
             except IntegrityError:
-                raise Exception('Attendee ja cadastrado!')
+                raise HttpConflictError('Attendee ja cadastrado!')
             except Exception as exception:
                 db.session.rollback()
                 raise exception
@@ -41,7 +43,7 @@ class AttendeesRepository:
                 )
                 return attendee
             except NoResultFound:
-                return None
+                raise HttpNotFoundError('Nenhum badge encontrado')
             
     def get_attendees_by_event_id(self, event_id: str) -> List[Attendees]:
         with db_connection_handler as db:
