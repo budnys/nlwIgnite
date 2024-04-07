@@ -41,3 +41,22 @@ class AttendeeHandler:
             },
             status_code=200
         )
+    
+    def get_attendees_from_event(self, http_request: HttpRequest) -> HttpResponse:
+        event_id = http_request.q_params['event_id']
+        attendees = self.__attendees_repository.get_attendees_by_event_id(event_id)
+        if not attendees: raise Exception(f"Participantes nao encontrados no evento: {event_id}")
+
+        formatter_attendees = []
+        for attendee in attendees:
+            formatter_attendees.append(
+                {
+                    "id": attendee.id,
+                    "name": attendee.name,
+                    "email": attendee.email,
+                    "checkedInAt": attendee.checkedInAt,
+                    "createAt": attendee.createdAt
+                }
+            )
+
+        return HttpResponse(body={"attendees": formatter_attendees}, status_code=200)
